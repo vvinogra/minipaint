@@ -1,23 +1,32 @@
 package com.example.android.minipaint
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View.SYSTEM_UI_FLAG_FULLSCREEN
-import android.view.WindowInsets
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var myCanvasView: MyCanvasView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val myCanvasView = MyCanvasView(this)
+        myCanvasView = MyCanvasView(this)
 
         setContentView(myCanvasView)
         myCanvasView.contentDescription = getString(R.string.canvasContentDescription)
+    }
 
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-        WindowCompat.getInsetsController(window, myCanvasView)
-            ?.hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            WindowCompat.setDecorFitsSystemWindows(window, true)
+
+            WindowCompat.getInsetsController(window, myCanvasView)?.run {
+                hide(WindowInsetsCompat.Type.statusBars() or WindowInsetsCompat.Type.navigationBars())
+                systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            }
+        }
     }
 }
